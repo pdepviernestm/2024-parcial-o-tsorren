@@ -1,9 +1,11 @@
 object gestorDeEmociones
 {
     var property limiteIntensidad = 25
+    var property intensidadInicialDeFuria = 100 
 
     // 5.
     method cambiarLimiteIntensidad(nuevoValor) {limiteIntensidad = nuevoValor}
+    method cambiarIntensidadInicialDeFuria(nuevoValor) {intensidadInicialDeFuria = nuevoValor}
 }
 
 class Causa 
@@ -30,18 +32,14 @@ class Emocion
         }
         eventosExperimentados += 1
     }
-    method cambiarIntensidadInicial() {}
 
     method calcularIntensidadReducida(cantidad) = intensidad - cantidad
     method reducirIntensidad(cantidad) {intensidad = self.calcularIntensidadReducida(cantidad)}
 }
 
-class Furia inherits Emocion(intensidad = self.intensidadInicial())
+class Furia inherits Emocion(intensidad = gestorDeEmociones.intensidadInicialDeFuria())
 {
     const palabrotas = []
-
-    var property intensidadInicial = 100
-    method cambiarIntensidadInicial(nuevoValor) {intensidadInicial = nuevoValor}
 
     method aprenderPalabrota(palabrota) {palabrotas.add(palabrota)}
     method olvidarPalabrota(palabrota) {palabrotas.remove(palabrota)}
