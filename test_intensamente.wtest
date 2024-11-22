@@ -1,0 +1,112 @@
+import personas.*
+import emociones.*
+import eventos.*
+
+describe "Tests Intensos"
+{
+    test "Persona no es adolescente"
+    {
+        const persona = new Persona(edad = 52)
+        assert.notThat(persona.esAdolescente())
+    }
+    test "Persona es adolescente"
+    {
+        const chico = new Persona(edad = 16)
+        assert.that(chico.esAdolescente())
+    }
+
+    test "Persona tiene nueva emocion"
+    {
+        const chica = new Persona(edad = 16)
+        assert.that(chica.emociones().isEmpty())
+
+        chica.tenerNuevaEmocion(new Ansiedad(intensidad = 45))
+        assert.notThat(chica.emociones().isEmpty())
+    }
+    test "Persona no está por explotar emocionalmente"
+    {
+        const persona = new Persona(edad = 32)
+        persona.tenerNuevaEmocion(new Tristeza(intensidad = 30))
+        assert.notThat(persona.estaPorExplotarEmocionalmente())
+    }
+    test "Persona está por explotar emocionalmente"
+    {
+        const persona = new Persona(edad = 32)
+        persona.tenerNuevaEmocion(new Alegria(intensidad = 30))
+        assert.that(persona.estaPorExplotarEmocionalmente())
+    }
+    test "Persona vive eventos"
+    {
+        const persona = new Persona(edad = 20)
+        persona.tenerNuevaEmocion(new Ansiedad(intensidad = 30))
+        
+        const bocharParcialFisica = new Evento(
+            impacto = 10,
+            descripcion = "Desaprobó el parcial de Física 1"
+        )
+        const promocionarArquitectura = new Evento(
+            impacto = 8,
+            descripcion = "Promocionar la materia Arquitectura de Computadoras"
+        )
+        const darExpoFinal = new Evento(
+            impacto = 8,
+            descripcion = "Dar exposición al final de la cursada"
+        )
+        const juntarseConAmigos = new Evento(
+            impacto = 15,
+            descripcion = "Juntarse con amigos después de los examenes"
+        )
+        bocharParcialFisica.serVividoPor(persona)
+        promocionarArquitectura.serVividoPor(persona)
+        darExpoFinal.serVividoPor(persona)
+
+        assert.that(persona.estaPorExplotarEmocionalmente())
+
+        juntarseConAmigos.serVividoPor(persona)
+
+        assert.notThat(persona.estaPorExplotarEmocionalmente())
+        assert.equals(30 - 15, persona.emociones().first().intensidad())
+        assert.equals(4, persona.emociones().first().eventosExperimentados())
+    }   
+    test "Modificar límite de intensidad emocional"
+    {
+        const persona = new Persona(edad = 32)
+        persona.tenerNuevaEmocion(new Alegria(intensidad = 30))
+        assert.equals(25, gestorDeEmociones.limiteIntensidad())
+        assert.that(persona.estaPorExplotarEmocionalmente())
+
+        gestorDeEmociones.cambiarLimiteIntensidad(50)
+        assert.equals(50, gestorDeEmociones.limiteIntensidad())
+        assert.notThat(persona.estaPorExplotarEmocionalmente())
+
+    }
+    // 6. Test
+    test "Grupo vive evento"
+    {
+        const padre = new Persona(edad = 42)
+        const madre = new Persona(edad = 42)
+
+        const hijo = new Persona(edad = 5)
+        const hija = new Persona(edad = 7)
+
+        madre.tenerNuevaEmocion(new Alegria(intensidad = 30))
+        padre.tenerNuevaEmocion(new Alegria(intensidad = 30))
+        hijo.tenerNuevaEmocion(new Alegria(intensidad = 30))
+        hija.tenerNuevaEmocion(new Alegria(intensidad = 30))
+
+
+        const familia = new Grupo(integrantes = [padre, madre, hijo, hija])
+
+        const nacimientoGatitos = new Evento(impacto = 20, descripcion = "Nacimiento de 5 gatitos en el patio")
+        
+        assert.equals(25, gestorDeEmociones.limiteIntensidad())
+        assert.that(familia.estaPorExplotarEmocionalmente())
+
+        nacimientoGatitos.serVividoPor(familia)
+
+        familia.integrantes().forEach({integrante => 
+            assert.equals(30-20, integrante.emociones().first().intensidad())
+        })
+        assert.notThat(familia.estaPorExplotarEmocionalmente())}
+
+}
